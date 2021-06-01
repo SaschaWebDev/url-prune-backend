@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const { customAlphabet } = require("nanoid");
-const nanoid = customAlphabet("234569abcefghjkprstuvwxyz", 8);
+// ~3 years needed, in order to have a 1% probability of at least one collision. https://zelark.github.io/nano-id-cc/
+const nanoid = customAlphabet("234569abcefghjkprstuvwxyz", 9);
 
 const urlsSchema = new mongoose.Schema({
   url: {
