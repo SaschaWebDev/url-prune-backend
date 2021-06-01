@@ -10,7 +10,8 @@ router.get("/", async (req, res) => {
     const urls = await urlServices.findAll();
     res.status(200).json({ urls: urls });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.log("Error during listing all urls: ", err);
+    res.status(500).json({ message: "Error during listing all urls" });
   }
 });
 
@@ -22,11 +23,14 @@ router.get("/:id", async (req, res) => {
     } = req;
 
     const url = await urlServices.findByUrlId(id);
-    url
-      ? res.status(200).json({ url: url })
-      : res.status(404).json({ message: `Url ${id} was not found.` });
+    res.status(200).json({ url: url });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    if (err.toString().includes("Cast to ObjectId failed for value")) {
+      res.status(404).json({ message: `Url was not found.` });
+    } else {
+      console.log("Error during listing a specific url: ", err);
+      res.status(500).json({ message: "Error during listing a specific url" });
+    }
   }
 });
 
@@ -47,7 +51,8 @@ router.post("/add", async (req, res) => {
       res.status(400).json({ message: "Provided url is malformed." });
     }
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.log("Error during adding a specific url: ", err);
+    res.status(500).json({ message: "Error during adding a specific url" });
   }
 });
 
@@ -58,7 +63,7 @@ router.get("/viewed/:code", async (req, res) => {
       params: { code },
     } = req;
 
-    let updatedUrl = await urlServices.updateUrlView(code);
+    const updatedUrl = await urlServices.updateUrlView(code);
     if (!updatedUrl) {
       return res
         .status(404)
@@ -66,7 +71,10 @@ router.get("/viewed/:code", async (req, res) => {
     }
     res.status(200).json({ updatedUrl });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.log("Error during adding a view to a specific url: ", err);
+    res
+      .status(500)
+      .json({ message: "Error during adding a view to a specific url" });
   }
 });
 
@@ -77,15 +85,19 @@ router.get("/redirect/:code", async (req, res) => {
       params: { code },
     } = req;
 
-    let foundUrl = await urlServices.findByMappedUrl(code);
+    const foundUrl = await urlServices.findByMappedUrl(code);
     if (!foundUrl) {
       return res
         .status(404)
         .json({ message: `Url mapped to ${code} was not found.` });
     }
+    await urlServices.updateUrlView(code);
     res.redirect(foundUrl.url);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.log("Error during redirecting to a specific url: ", err);
+    res
+      .status(500)
+      .json({ message: "Error during redirecting to a specific url" });
   }
 });
 

@@ -34,7 +34,7 @@ server.use(helmet());
 server.use(cors());
 
 server.get("/", function welcome(req, res) {
-  res.send(`Welcome to the ${process.env.ENVIRONMENT} API of URL Pruning!`);
+  res.send(`Welcome to the ${process.env.ENVIRONMENT} API of url-pruning!`);
 });
 
 const urlRouter = require("./routes/url-router.js");
