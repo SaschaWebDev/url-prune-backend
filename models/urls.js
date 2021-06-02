@@ -7,8 +7,7 @@ const urlsSchema = new mongoose.Schema({
   url: {
     type: String,
     required: true,
-    unique: true,
-    lowercase: true,
+    unique: true
   },
   mapped_url: {
     type: String,
