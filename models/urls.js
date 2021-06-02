@@ -31,6 +31,11 @@ const urlsSchema = new mongoose.Schema({
     required: true,
     default: 0,
   },
+  recentUserId: {
+    type: String,
+    required: true,
+    default: 0,
+  },
 });
 
 module.exports = mongoose.model("Url", urlsSchema);

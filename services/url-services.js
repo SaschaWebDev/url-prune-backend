@@ -9,6 +9,7 @@ module.exports = {
   findByOriginalUrl,
   createUrl,
   updateUrlView,
+  getMostRecentPrunes,
 };
 
 async function findAll() {
@@ -23,13 +24,22 @@ async function findByMappedUrl(mapped_url) {
   return await UrlSchema.findOne({ mapped_url: mapped_url });
 }
 
+async function findLastThreePrunes(recentUserId) {
+  return await UrlSchema.find({ recentUserId: recentUserId })
+    .sort({
+      created_at: "desc",
+    })
+    .limit(3);
+}
+
 async function findByOriginalUrl(url) {
   return await UrlSchema.findOne({ url: url });
 }
 
-async function createUrl(given_url) {
+async function createUrl(given_url, recentUserId) {
   const url = new UrlSchema({
     url: given_url,
+    recentUserId: recentUserId,
   });
   return await url.save();
 }
@@ -44,4 +54,12 @@ async function updateUrlView(mapped_url) {
   foundUrl.view_count += 1;
 
   return await foundUrl.save();
+}
+
+async function getMostRecentPrunes(recentUserId) {
+  let foundPrunes = await findLastThreePrunes(recentUserId);
+  if (!foundPrunes) {
+    return null;
+  }
+  return foundPrunes;
 }
